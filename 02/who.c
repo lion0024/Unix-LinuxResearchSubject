@@ -1,4 +1,4 @@
-/* who2. - /etc/utmpを読み出し、その中の情報のリストを表示する
+/* who - /etc/utmpを読み出し、その中の情報のリストを表示する
  *       - 空レコードが出力されないようにし、時刻を適切に整形する
  */
 
@@ -14,20 +14,24 @@
 void showtime(long);
 void show_info(struct utmp *);
 
-int main()
+int main(int argc, char *argv[])
 {
 	struct	utmp	utbuf;						/* 情報をここに読み出す					*/
 	int						utmpfd;						/* このデスクリプタから読み出す	*/
 
+  if (argc != 1 && argc != 3) {
+    exit(EXIT_FAILURE);
+  }
+
 	if ((utmpfd = open(UTMP_FILE, O_RDONLY)) == -1){
-		perror(UTMP_FILE);
-		exit(1);
+		fprintf(stderr, UTMP_FILE);
+		exit(EXIT_FAILURE);
 	}
 
 	while (read(utmpfd, &utbuf, sizeof(utbuf)) == sizeof(utbuf))
 		show_info(&utbuf);
 	close(utmpfd);
-	return 0;
+	exit(EXIT_SUCCESS);
 }
 
 /* 
